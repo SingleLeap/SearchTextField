@@ -123,6 +123,9 @@ open class SearchTextField: UITextField {
     /// Set the results list's header
     open var resultsListHeader: UIView?
 
+    /// Whether we should select the first matching item when Return key is hit
+    open var autocompleteOnSubmit: Bool = true
+
     // Move the table around to customize for your layout
     open var tableXOffset: CGFloat = 0.0
     open var tableYOffset: CGFloat = 0.0
@@ -393,6 +396,8 @@ open class SearchTextField: UITextField {
     }
     
     @objc open func textFieldDidEndEditingOnExit() {
+        guard autocompleteOnSubmit else { return }
+
         if let firstElement = filteredResults.first {
             if let itemSelectionHandler = self.itemSelectionHandler {
                 itemSelectionHandler(filteredResults, 0)
@@ -460,7 +465,7 @@ open class SearchTextField: UITextField {
                 }
                 
                 if item.title.lowercased().hasPrefix(textToFilter) {
-                    let indexFrom = textToFilter.index(textToFilter.startIndex, offsetBy: textToFilter.characters.count)
+                    let indexFrom = textToFilter.index(textToFilter.startIndex, offsetBy: textToFilter.count)
                     let itemSuffix = item.title[indexFrom...]
                     
                     item.attributedTitle = NSMutableAttributedString(string: String(itemSuffix))
